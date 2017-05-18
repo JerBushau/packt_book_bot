@@ -14,6 +14,7 @@ module.exports = function (req, res, next) {
     const $ = cheerio.load(body);
     const freeBook = $('.dotd-title h2').text().trim();
     const botPayload = {
+      response_type: "in_channel",
       text : `Today's free book is "${freeBook}" https://www.packtpub.com/packt/offers/free-learning/.`
     };
 
