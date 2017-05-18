@@ -1,16 +1,17 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var packtbot = require('./packtbot')
+'use strict'
 
-var app = express();
-var port = process.env.PORT || 3000;
+const express = require('express');
+const bodyParser = require('body-parser');
+const packtbot = require('./packtbot')
 
-// body parser middleware
+const app = express();
+const port = process.env.PORT || 3000;
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // test route
 app.get('/', function (req, res) {
-  res.status(200).send('Hello world!');
+  res.status(200).send('testing!');
 });
 
 // bot route
