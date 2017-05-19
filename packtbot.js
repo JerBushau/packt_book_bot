@@ -5,6 +5,15 @@ const cheerio = require('cheerio');
 const packt = 'https://www.packtpub.com/packt/offers/free-learning/';
 
 module.exports = function (req, res, next) {
+  // help message for `/freebook help`
+  if (req.body.text && req.body.text === 'help') {
+    const botPayload = {
+      response_type: 'ephemeral',
+      text: `The function of this bot is to collect and share the title of the Packtpub.com free learning offer of the day.\nSimply type \`/freebook\``
+    };
+
+    return res.status(200).json(botPayload);
+  }
 
   request(packt, function (error, response, body) {
     if (error) {
