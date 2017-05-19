@@ -9,7 +9,7 @@ const errorPayload = {
 };
 const helpPayload = {
   response_type: 'ephemeral',
-  text: `The goal of this bot is to collect and share the link to and title of the Packtpub.com free learning offer of the day.\nSimply type \`/freebook\` to try it out!`
+  text: `The goal of this bot is to collect and share the link to and title of the Packtpub.com free learning offer of the day.\nSimply type \`/freebook\` to share in channel or \`/freebook private\` to view privately!`
 }
 
 function scrapeAndPostBook(res, resType) {
