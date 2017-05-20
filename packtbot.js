@@ -3,6 +3,7 @@
 const request = require('request');
 const cheerio = require('cheerio');
 const packt = 'https://www.packtpub.com/packt/offers/free-learning/';
+
 const errorPayload = {
   response_type: 'ephemeral',
   text: `Sorry, try again in a few seconds!`
@@ -10,7 +11,7 @@ const errorPayload = {
 const helpPayload = {
   response_type: 'ephemeral',
   text: `The goal of this bot is to collect and share the link to and title of the Packtpub.com free learning offer of the day.\nSimply type \`/freebook\` to share in channel or \`/freebook private\` to view privately!`
-}
+};
 
 function scrapeAndPostBook(res, resType) {
   request(packt, function (error, response, body) {
