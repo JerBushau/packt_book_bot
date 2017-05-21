@@ -32,7 +32,7 @@ app.get('/oauth', function(req, res){
       // get the auth token
       const token = JSON.parse(body).access_token;
 
-      // get the team domain name to redirect to the team URL after auth
+      // get the team domain name to redirect to the team URL after auth(from tutorial debating usefulness vs a success page)
       request.post('https://slack.com/api/team.info', {form: {token: token}}, function (error, response, body) {
         if (!error && response.statusCode == 200) {
 
