@@ -10,7 +10,8 @@ body {
 }
 
 article {
-  margin: auto 30px;
+  margin: auto;
+  max-width: 800px;
 }
 
 header {
@@ -67,7 +68,7 @@ footer p {
   margin: auto;
   text-align: center;
   min-height: 100vh;
-  max-width: 900px;
+  max-width: 1000px;
   background: #b7b7b7;
   background: linear-gradient(to bottom, #b7b7b7, #ececec 70%);
 }
@@ -75,4 +76,10 @@ footer p {
 .logo {
   max-height: 270px;
   max-width: 270px;
+}
+
+@media (max-width: 838px) {
+  article {
+    margin: auto 20px;
+  }
 }
