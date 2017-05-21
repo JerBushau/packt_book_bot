@@ -17,7 +17,7 @@ app.use(express.static(__dirname + '/public'));
 app.get('/oauth', function(req, res){
   if (!req.query.code) {
     // access denied
-    return res.redirect('https://packpubtbot.herokuapp.com/');
+    return res.redirect('https://packtpubbot.herokuapp.com/');
   }
 
   const data = {form: {
