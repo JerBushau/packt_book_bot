@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // serve static files
 app.use(express.static(__dirname + '/public'));
 
-// Oauth
+// oauth route
 app.get('/oauth', function(req, res){
   if (!req.query.code) {
     // access denied
@@ -26,13 +26,13 @@ app.get('/oauth', function(req, res){
       code: req.query.code
   }};
 
-  // convert to modern promise style request at some point
+  // convert to modern promise style requests at some point
   request.post('https://slack.com/api/oauth.access', data, function (error, response, body) {
     if (!error && response.statusCode == 200) {
-      // Get an auth token
+      // get the auth token
       const token = JSON.parse(body).access_token;
 
-      // Get the team domain name to redirect to the team URL after auth
+      // get the team domain name to redirect to the team URL after auth
       request.post('https://slack.com/api/team.info', {form: {token: token}}, function (error, response, body) {
         if (!error && response.statusCode == 200) {
 
@@ -47,7 +47,7 @@ app.get('/oauth', function(req, res){
         }
       });
     }
-  })
+  });
 });
 
 // bot route
