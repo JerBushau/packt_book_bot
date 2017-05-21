@@ -42,7 +42,7 @@ app.get('/oauth', function(req, res){
           } else {
             let team = JSON.parse(body).team.domain;
 
-            res.redirect(`http://${team}.slack.com`);
+            return res.redirect(`http://${team}.slack.com`);
           }
         }
       });
