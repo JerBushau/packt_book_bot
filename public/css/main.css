@@ -45,7 +45,7 @@ footer p {
   padding: 10px;
   text-decoration: none;
   font-family: 'Montserrat', sans-serif;
-  color: #353535;
+  color: #2a2a2a;
   transition: color 0.4s ease;
 }
 
@@ -55,14 +55,15 @@ footer p {
 
 .site-wrapper {
   font-family: 'Montserrat', sans-serif;
-  font-color: #353535;
+  color: #2a2a2a;
   display: flex;
   flex-direction: column;
   margin: auto;
   text-align: center;
   min-height: 100vh;
   max-width: 900px;
-  background: #e5e5e5;
+  background: #b7b7b7;
+  background: linear-gradient(to bottom, #b7b7b7, #ececec 70%);
 }
 
 .logo {
