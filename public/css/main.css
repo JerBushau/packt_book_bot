@@ -27,6 +27,8 @@ small {
 
 code {
   color: #f42e74;
+  background: whitesmoke;
+  padding: 3px;
 }
 
 footer {
