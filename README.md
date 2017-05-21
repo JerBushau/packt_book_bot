@@ -10,4 +10,7 @@ The goal of this app is to help share the packt publishing free learning offer o
 | `/freebook private` | Posts the title of today's book and link to [Packt](https://www.packtpub.com/packt/offers/free-learning) visible only to you. |
 | `/freebook help` | Posts helpful information about Packtpubbookbot visible only to you. |
 
-###### *I myself nor is this app in anyway affiliated with Packt Publishing. Just a fan of free books.*
+#### Install:
+https://packtpubbot.herokuapp.com/
+
+###### *I myself nor is this app, in anyway affiliated with Packt Publishing. Just a fan of free books.*
