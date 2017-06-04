@@ -15,8 +15,8 @@ app.use(express.static(__dirname + '/public'));
 
 // oauth route
 app.get('/oauth', function(req, res){
-  if (!req.query.code) {
-    // access denied
+  if (!req.query.code || req.ok) {
+    // access denieds
     return res.redirect('https://packtpubbot.herokuapp.com/');
   }
 
@@ -31,6 +31,7 @@ app.get('/oauth', function(req, res){
     if (!error && response.statusCode == 200) {
       // get the auth token and webhook url
       const token = JSON.parse(body).access_token;
+      console.log(JSON.parse(body))
 
       // get the team domain name to redirect to the team URL after auth(from tutorial debating usefulness vs a success page)
       request.post('https://slack.com/api/team.info', {form: {token: token}}, function (error, response, body) {

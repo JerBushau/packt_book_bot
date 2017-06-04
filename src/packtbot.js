@@ -10,12 +10,13 @@ const errorPayload = {
 };
 const helpPayload = {
   response_type: 'ephemeral',
-  text: `The goal of this bot is to collect and share the link to and title of the Packtpub.com free learning offer of the day.\nSimply type \`/freebook\` to share in channel or \`/freebook private\` to view privately!`
+  text: `The goal of this bot is to collect and share the link to and title of the Packtpub.com` +
+  ` free learning offer of the day.\nSimply type \`/freebook\` to share in channel or \`/freebook private\` to view privately!`
 };
 
 let jobs = [];
 
-function scrapeBook(res, url, cb) {
+function scrapeBook(res, url, type='ephemeral', cb) {
   request(packt, function (err, response, body) {
     if (err) {
       return 'Something went wrong...'
@@ -24,15 +25,16 @@ function scrapeBook(res, url, cb) {
     const freeBook = $('.dotd-title h2').text().trim();
     let mssg = `Today's free book is '${freeBook}'. \n:point_right: ${packt}`;
 
-    cb(res, mssg, url);
+    cb(res, {mssg: mssg, url: url, type: type});
   });
 }
 
-function postMssg(res, mssg, url) {
+function postMssg(res, {url, type, mssg}) {
   let options = {
     method: 'POST',
     uri: url,
     json: {
+      response_type: type || 'ephemeral',
       contentType: 'application/json',
       text: mssg
     }
@@ -40,32 +42,74 @@ function postMssg(res, mssg, url) {
 
   request.post(options, (err, response) => {
     if (err || response.statusCode !== 200) {
-      return res.status(500).json(errorPayload);
+      console.log(err)
     }
   });
 }
 
-function startJob(res, url, time) {
-  let newJob = schedule.scheduleJob(`${time} * * * * *`, function() {
-    scrapeBook(res, url, postMssg);
+function formatTime(mTime) {
+  if (mTime === 0) {
+     return 12 + ' am'
+
+  } else if (mTime >= 12) {
+    if (mTime === 12) {
+      return 12 + ' pm'
+    }
+    return mTime - 12 + ' pm'
+  }
+  return mTime + ' am'
+}
+
+function jobUnique(teamID) {
+  for (let job = 0; job < jobs.length; job ++) {
+    if (jobs[job].teamID === teamID) {
+      return true
+    }
+  }
+  return false
+}
+
+function setReminder(res, url, teamID, time) {
+  if (jobUnique(teamID)) {
+    return res.status(200).json({text:'I currently support only one reminder per team.' +
+    ' Use `/freebook` to share the current free book now or `/freebook quit` to delete current reminder.'})
+  }
+  let newJob = schedule.scheduleJob(`0 ${time} * * *`, function() {
+    scrapeBook(res, url, 'in_channel', postMssg);
   });
+  newJob.teamID = teamID;
   jobs.push(newJob);
-  // return res.status(200).json({text:'task scheduled.'})
+  return res.status(200).json({text:`Daily reminder scheduled for ${formatTime(parseInt(time))}.`})
 }
 
 module.exports = function (req, res, next) {
-  let text = req.body.text;
+  let text = req.body.text.toLowerCase();
   let webhookURL = req.body.response_url;
-  // create a task
-  if (text && /[1-9]|1[0-9]|2[0-3]/.test(text) && job === false) {
-    startJob(res, webhookURL, text)
-    console.log(jobs)
+  let teamID = req.body.team_id;
 
-  // cancel task
-  } else if(text && text === 'quit') {
-    job = false;
-    newJob.cancel();
-    return res.status(200).json({text:'task cancelled.'})
+  // create a reminder
+  if (text && /^((?:[0-9]|1[0-9]|2[0-3]))$/.test(text)) {
+    setReminder(res, webhookURL, teamID, text)
+
+  // cancel reminder
+  } else if(text && text === 'cancel') {
+    let found = false;
+
+    jobs.some(function (job, i) {
+      console.log(job)
+      if (job.teamID === teamID) {
+        job.cancel();
+        jobs.splice(i, 1)
+        found = true
+
+        return res.status(200).json({text:'Daily reminder canceled.'})
+      }
+    })
+
+    if (!found) {
+      return res.status(200).json({text:'To schedule a daily reminder type `/freebook x` where x is a number 1-24,' +
+        ' representing the hour of day to post Packt\'s free book of the day.'})
+    }
 
   // help
   } else if (text && text === 'help') {
@@ -73,12 +117,17 @@ module.exports = function (req, res, next) {
 
   // private response, in case you don't want to disturb your team.
   } else if (text && text === 'private') {
-    postMssg(res, 'i\'m private');
-    return res.status(200).json('got it')
+    scrapeBook(res, webhookURL, 'ephemeral', postMssg);
+    return res.status(200).json();
 
   // default
+  } else if (!text){
+    scrapeBook(res, webhookURL, 'in_channel', postMssg);
+    return res.status(200).json();
+
+  // invalid command
   } else {
-    postMssg(res, 'i\'m public');
-    // return res.status(200).json('got it')
+    return res.status(200).json({text: 'valid commands: `/freebook`, `/freebook private`, `/freebook 1-23`, ' +
+      '`/freebook cancel` or `/freebook help`'})
   }
 }
