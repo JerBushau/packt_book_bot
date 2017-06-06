@@ -4,10 +4,7 @@ const request = require('request');
 const cheerio = require('cheerio');
 const schedule = require('node-schedule');
 const packt = 'https://www.packtpub.com/packt/offers/free-learning/';
-const errorPayload = {
-  response_type: 'ephemeral',
-  text: `Sorry, try again in a few seconds!`
-};
+
 const helpPayload = {
   response_type: 'ephemeral',
   text: `The goal of this bot is to collect and share the link to and title of the Packtpub.com` +
@@ -40,7 +37,7 @@ function postMssg(res, {url, type, mssg}) {
     }
   };
 
-  request.post(options, (err, response) => {
+  request.post(options, function(err, response) {
     if (err || response.statusCode !== 200) {
       console.log(err)
     }
@@ -60,17 +57,14 @@ function formatTime(mTime) {
   return mTime + ' am'
 }
 
-function jobUnique(teamID) {
-  for (let job = 0; job < jobs.length; job ++) {
-    if (jobs[job].teamID === teamID) {
-      return true
-    }
-  }
-  return false
+function checkReminder(teamID) {
+  return jobs.some(function(job) {
+    return (job.teamID === teamID)
+  });
 }
 
 function setReminder(res, url, teamID, time) {
-  if (jobUnique(teamID)) {
+  if (checkReminder(teamID)) {
     return res.status(200).json({text:'I currently support only one reminder per team.' +
     ' Use `/freebook` to share the current free book now or `/freebook quit` to delete current reminder.'})
   }
@@ -93,18 +87,15 @@ module.exports = function (req, res, next) {
 
   // cancel reminder
   } else if(text && text === 'cancel') {
-    let found = false;
 
-    jobs.some(function (job, i) {
-      console.log(job)
+    let found = jobs.some(function (job, i) {
       if (job.teamID === teamID) {
         job.cancel();
-        jobs.splice(i, 1)
-        found = true
+        jobs.splice(i, 1);
 
         return res.status(200).json({text:'Daily reminder canceled.'})
       }
-    })
+    });
 
     if (!found) {
       return res.status(200).json({text:'To schedule a daily reminder type `/freebook x` where x is a number 1-24,' +
@@ -113,17 +104,17 @@ module.exports = function (req, res, next) {
 
   // help
   } else if (text && text === 'help') {
-    return res.status(200).json(helpPayload);
+    return res.status(200).json(helpPayload)
 
   // private response, in case you don't want to disturb your team.
   } else if (text && text === 'private') {
     scrapeBook(res, webhookURL, 'ephemeral', postMssg);
-    return res.status(200).json();
+    return res.status(200).json()
 
   // default
   } else if (!text){
     scrapeBook(res, webhookURL, 'in_channel', postMssg);
-    return res.status(200).json();
+    return res.status(200).json()
 
   // invalid command
   } else {

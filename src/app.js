@@ -15,8 +15,8 @@ app.use(express.static(__dirname + '/public'));
 
 // oauth route
 app.get('/oauth', function(req, res){
-  if (!req.query.code || req.ok) {
-    // access denieds
+  if (!req.query.code) {
+    // access denied
     return res.redirect('https://packtpubbot.herokuapp.com/');
   }
 
