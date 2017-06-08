@@ -26,12 +26,10 @@ app.get('/oauth', function(req, res){
       code: req.query.code
   }};
 
-  // convert to modern promise style requests at some point
   request.post('https://slack.com/api/oauth.access', data, function (error, response, body) {
     if (!error && response.statusCode == 200) {
       // get the auth token and webhook url
       const token = JSON.parse(body).access_token;
-      console.log(JSON.parse(body))
 
       // get the team domain name to redirect to the team URL after auth(from tutorial debating usefulness vs a success page)
       request.post('https://slack.com/api/team.info', {form: {token: token}}, function (error, response, body) {

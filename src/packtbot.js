@@ -8,11 +8,13 @@ const packt = 'https://www.packtpub.com/packt/offers/free-learning/';
 const helpPayload = {
   response_type: 'ephemeral',
   text: `The goal of this bot is to collect and share the link to and title of the Packtpub.com` +
-  ` free learning offer of the day.\nSimply type \`/freebook\` to share in channel or \`/freebook private\` to view privately!`
+  ` free learning offer of the day.\nSimply type \`/freebook\` to share in channel or \`/freebook private\` to view privately!
+You can also schedule a daily reminder by typing \`/freebook x\` where x is a number 1-24, representing the hour of day to post Packt's free book of the day.`
 };
 
 let jobs = [];
 
+// simplify scrape and post
 function scrapeBook(res, url, type='ephemeral', cb) {
   request(packt, function (err, response, body) {
     if (err) {
@@ -44,6 +46,7 @@ function postMssg(res, {url, type, mssg}) {
   });
 }
 
+// move helpers to external file
 function formatTime(mTime) {
   if (mTime === 0) {
      return 12 + ' am'
@@ -63,10 +66,12 @@ function checkReminder(teamID) {
   });
 }
 
+// possibly implement a function to ccreate jobs and another
+// to cylce thru existing jobs and create them if they have not yet been created.
 function setReminder(res, url, teamID, time) {
   if (checkReminder(teamID)) {
     return res.status(200).json({text:'I currently support only one reminder per team.' +
-    ' Use `/freebook` to share the current free book now or `/freebook quit` to delete current reminder.'})
+    ' Use `/freebook` to share the current free book now or `/freebook cancel` to delete current reminder.'})
   }
   let newJob = schedule.scheduleJob(`0 ${time} * * *`, function() {
     scrapeBook(res, url, 'in_channel', postMssg);
@@ -88,6 +93,7 @@ module.exports = function (req, res, next) {
   // cancel reminder
   } else if(text && text === 'cancel') {
 
+    // need a delete job function
     let found = jobs.some(function (job, i) {
       if (job.teamID === teamID) {
         job.cancel();
