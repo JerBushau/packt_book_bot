@@ -4,14 +4,17 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
 const packtbot = require('./packtbot');
+const router = require('./api');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+require('./database');
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // serve static files
-app.use(express.static(__dirname + '/public'));
+app.use('/', express.static(__dirname + '/public'));
 
 // oauth route
 app.get('/oauth', function(req, res){
@@ -48,6 +51,9 @@ app.get('/oauth', function(req, res){
     }
   });
 });
+
+// api route
+app.use('/api', router);
 
 // bot route
 app.post('/freebook', packtbot);

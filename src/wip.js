@@ -4,87 +4,238 @@ const request = require('request');
 const cheerio = require('cheerio');
 const nodeSchedule = require('node-schedule');
 const packt = 'https://www.packtpub.com/packt/offers/free-learning/';
+const apiURL = 'https://381b9b0b.ngrok.io/api'; 
 
-class Scheduler {
-  constructor() {
-    this.queue = [];
-    this.scheduledReminders = [];
-  }
+// store
+function Store() {
+  return {
+    getAllReminders: (cb) => {
+      request.get(`${apiURL}/reminders`, (err, response, body) => {
+        if (err) { console.error(err); }
+        const _body = JSON.parse(response.body);     
+        cb(_body);
+      });
+    },
+    createNewReminder: (reminder, cb) => {
+      const options = {
+        method: 'POST',
+        url: `${apiURL}/reminders`,
+        form:{ reminder: reminder }
+      };
+      request(options, (err) => {
+        if (err) { console.error(err) }
+        console.log('Reminder saved');
+        cb();
+      });
+    },
+    deleteReminder: (reminderId, cb) => {
+      request.delete(`${apiURL}/reminders:${reminderId}`, (err) => {
+        if (err) { console.error(err) }
+        console.log('Reminder deleted');
+      });
+    },
 
-  createReminder({url, teamID, time}) {
-    this.queueReminder({
-      url: url,
-      teamID: teamID,
-      time: time
-    });
-  }
-
-  queueReminder(reminder) {
-    this.queue.push(reminder);
-  }
-
-  schedule(reminder) {
-    let newJob = nodeSchedule.scheduleJob(`0 ${reminder.time} * * *`, function() {
-      scrapeBook({url: reminder.url, type: 'in_channel'}, postMssg);
-    });
-
-    newJob.teamID = reminder.teamID;
-    newJob.is_scheduled = true;
-    this.scheduledReminders.push(newJob);
-    this.queue.pop()
-  }
-
-  scheduleAll() {
-    this.queue.forEach(reminder => {
-      this.schedule(reminder);
-    });
   }
 }
 
-function scrapeBook(cbOptions, cb) {
-  request(packt, function (err, response, body) {
-    if (err) {
-      return 'Something went wrong...'
-    }
-    const $ = cheerio.load(body);
-    const freeBook = $('.dotd-title h2').text().trim();
-    let mssg = `Today's free book is '${freeBook}'. \n:point_right: ${packt}`;
+function Scheduler() {
+  return {
+    db: Store(),
+    jobs: [],
+    initJobs: function() {
+      this.db.getAllReminders(results => {
+        const rems = results.reminders;
+        this.createJobs(rems, false, _ => { console.log(this.jobs) });
+      });
+    },
+    createJobs: function(reminders, newReminder, cb) {
+      this.scheduleJobs(reminders) 
+      if (cb) {
+        cb()
+      }
+    },
+    scheduleJobs: function(reminders) {
+      reminders.forEach(reminder => {
+        let newJob = nodeSchedule.scheduleJob(`0 ${reminder.time} * * *`, function() {
+          console.log('Job scheduled');   
+        });
+        reminder.is_scheduled = true;
+        newJob.teamID = reminder.teamID;
+        newJob.id = reminder._id;
+        this.jobs.push(newJob);
+      });
+    },
+    createNewReminder: function(reminder) {
+      this.db.createNewReminder(reminder, _ => {});
+    },
 
-    cbOptions.mssg = mssg;
-    cb(cbOptions)
-  });
+  }
 }
 
-function postMssg({url, type, mssg}) {
-  let options = {
-    method: 'POST',
-    uri: url,
-    json: {
-      response_type: type || 'ephemeral',
-      contentType: 'application/json',
-      text: mssg
-    }
-  };
-  console.log(options)
-  // request.post(options, function(err, response) {
-  //   if (err) {
-  //     console.error(err)
-  //   }
-  // });
-}
+const s = Scheduler();
 
-let s = new Scheduler();
-let data = [{url: 'fakey', teamID: 'abcdefg', time: 12},
-{url: 'something else', teamID: 'tyuiop', time: 10},
-{url: 'fake url', teamID: '12345', time: 18}];
+s.initJobs();
 
-data.forEach(i => {
-  s.queue.push(i);
-})
 
-s.scheduleAll()
+// plan:
+// -----
+// change schedulejobs to singular and put the loop in the createJobs functions
+// looking for a way to add a new job dynamically during app runtime
 
-console.log(s.queue, s.scheduledReminders)
+
+
+
+
+
+
+
+
+
+
+
+
+
+//// storage factory
+//function Storage() {
+//  return {
+//    jobs: [],
+//    getAllJobs: function(cb) {
+//      const self = this;
+//      request.get(`${apiURL}/reminders`, function(err, response, body) {
+//        if (err) {
+//          console.log(err)
+//        }
+//        const res_body = JSON.parse(response.body)
+//        cb(res_body.reminders)
+//      });
+//    },
+//    init: function(cb) {
+//      this.getAllJobs((reminders) => {
+//        reminders.forEach((reminder) => {
+//          this.createJob(reminder);
+//	  console.log(reminder);
+//          cb();
+//        });
+//      });
+//    },
+//    createJob:function(reminder) {
+//      let newJob = nodeSchedule.scheduleJob(`0 ${reminder.time} * * *`, function() {
+//        // scrapeBook({url: reminder.url, type: 'in_channel'}, postMssg);
+//     	console.log('hello nurse');
+//      });
+//      newJob.id = reminder._id;
+//      newJob.teamID = reminder.teamID;
+//      this.jobs.push(newJob)
+//      console.log('job successfully created')
+//    },
+//    deleteJob(teamID) {
+//      this.jobs.forEach((job, i) => {
+//        if (job.teamID === teamID) {
+//          job.cancel()
+//          this.jobs.splice(i, 1);
+//          request.delete(`${apiURL}/reminders/${job.id}`, function() {
+//            console.log('job deleted')
+//          });
+//        }
+//        console.log('Matching job not found')
+//      });
+//    }
+//  }
+//}
+//
+//function scrapeBook(cbOptions, cb) {
+//  request(packt, function (err, response, body) {
+//    if (err) {
+//      return 'Something went wrong...'
+//    }
+//    const $ = cheerio.load(body);
+//    const freeBook = $('.dotd-title h2').text().trim();
+//    let mssg = `Today's free book is '${freeBook}'. \n:point_right: ${packt}`;
+//
+//    cbOptions.mssg = mssg;
+//    cb(cbOptions)
+//  });
+//}
+//
+//function postMssg({url, type, mssg}) {
+//  let options = {
+//    method: 'POST',
+//    uri: url,
+//    json: {
+//      response_type: type || 'ephemeral',
+//      contentType: 'application/json',
+//      text: mssg
+//    }
+//  };
+//  console.log(options)
+//  request.post(options, function(err, response) {
+//    if (err) {
+//      console.error(err)
+//    }
+//  });
+//}
+//
+//const s = new Storage();
+//s.init(_=>{console.log(s.jobs)});
+//
+//setTimeout(()=>{s.createJob({url: 'fakeURL', teamID: 'fakeTeamID', time: 10})}, 1500);
+//setTimeout(()=>{console.log(s.jobs)}, 3000)
+//
+
+
+
+
+
+// class Scheduler {
+//   constructor() {
+//     this.queue = [];
+//     this.scheduledReminders = [];
+//   }
+
+//   createReminder({url, teamID, time}) {
+//     this.queueReminder({
+//       url: url,
+//       teamID: teamID,
+//       time: time
+//     });
+//   }
+
+//   queueReminder(reminder) {
+//     this.queue.push(reminder);
+//   }
+
+//   schedule(reminder) {
+//     let newJob = nodeSchedule.scheduleJob(`0 ${reminder.time} * * *`, function() {
+//       scrapeBook({url: reminder.url, type: 'in_channel'}, postMssg);
+//     });
+
+//     newJob.teamID = reminder.teamID;
+//     newJob.is_scheduled = true;
+//     this.scheduledReminders.push(newJob);
+//     this.queue.pop()
+//   }
+
+//   scheduleAll() {
+//     this.queue.forEach(reminder => {
+//       this.schedule(reminder);
+//     });
+//   }
+// }
+
+
+
+// let s = new Scheduler();
+// let data = [{url: 'fakey', teamID: 'abcdefg', time: 12},
+// {url: 'something else', teamID: 'tyuiop', time: 10},
+// {url: 'fake url', teamID: '12345', time: 18}];
+
+// data.forEach(i => {
+//   s.queue.push(i);
+// })
+
+// s.scheduleAll()
+
+// console.log(s.queue, s.scheduledReminders)
 
 // const helpPayload = {
 //   response_type: 'ephemeral',
