@@ -34,6 +34,13 @@ class Mssgr {
     });
   }
 
+  postBook({url, }) {
+    bookMssg()
+    .then(mssg => {
+      request.post({url, });
+    });
+  }
+
   send(res, {response_type='ephemeral', text}) {
     let options =  {
       response_type: response_type,

@@ -3,6 +3,6 @@ const Model = require('./model');
 const Mssgr = require('./mssgr');
 const App = require('./app');
 
-const app = new App(new Mssgr, new Model, new Store);
+const app = new App(Mssgr, Model, Store);
 
 module.exports = app;

@@ -2,9 +2,9 @@
 
 class App {
   constructor(mssgr, model, db) {
-    this.mssgr = mssgr;
-    this.model = model;
-    this.db = db;
+    this.mssgr = new mssgr;
+    this.model = new model(this.mssgr);
+    this.db = new db;
   }
 
   // On start up
@@ -24,13 +24,13 @@ class App {
     };
     this.model.add(reminder);
     this.db.add(reminder);
-    this.mssgr.add(res, reminder.time)
+    this.mssgr.add(res, reminder.time);
 
   }
 
   remove(res, teamID) {
     if (!this.isDuplicate(teamID)) {
-      return console.error('You don\'t have any scheduled reminders to cancel')
+      // this.messgr.error()
     }
     this.model.remove(teamID);
     this.db.remove(teamID);

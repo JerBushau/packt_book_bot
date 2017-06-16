@@ -26,7 +26,7 @@ module.exports = function (req, res, next) {
 
   // default
   } else if (!text){
-    app.mssgr.book(res, false);
+    app.mssgr.book(res);
 
   // invalid command
   } else {
