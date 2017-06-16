@@ -11,13 +11,12 @@ class Mssgr {
   }
 
   formatTime(mTime) {
+    mTime = parseInt(mTime);
     if (mTime === 0) {
-       return 12 + ' am'
-
-    } else if (mTime >= 12) {
-      if (mTime === 12) {
-        return 12 + ' pm'
-      }
+      return 12 + ' am'
+    } else if (mTime === 12) {
+      return 12 + ' pm'
+    } else if (mTime > 12) {
       return mTime - 12 + ' pm'
     }
     return mTime + ' am'
@@ -35,48 +34,43 @@ class Mssgr {
     });
   }
 
-  send(res, {url, type, mssg}) {
-    let options = {
-      uri: url,
-      json: {
-        response_type: type || 'ephemeral',
-        contentType: 'application/json',
-        text: mssg
-      }
+  send(res, {response_type='ephemeral', text}) {
+    let options =  {
+      response_type: response_type,
+      contentType: 'application/json',
+      text: text
     };
-    request.post(options, function(err, response) {
-      if (err || response.statusCode !== 200) {
-        console.log(err)
-      }
-      return res.status(200).json();
-    });
-  }
 
-  // maybe turn these functions into an array of mssgs that can all be sent using Mssgr.send()
-  book(res, options) {
-    this.bookMssg()
-    .then(mssg => {
-      this.send(res, {url: options.url, type: options.type, mssg: mssg});
-    });
+    return res.status(200).json(options);
   }
 
   // slash replies
+  // maybe turn these functions into an array of mssgs that can all be sent using Mssgr.send()
+  book(res, type) {
+    this.bookMssg()
+    .then(mssg => {
+      this.send(res, { response_type: type, text: mssg})
+    });
+  }
+
   add(res, time) {
-    const mssg = `Your reminder is scheduled for ${this.formatTime(time)} every day! To cancel type: \`/freebook cancel\`.`;
-    res.status(200).json({response_type: 'in_channel', text: mssg})
+    const mssg = `Your reminder is scheduled for ${this.formatTime(time)} in this channel every day!
+To cancel type: \`/freebook cancel\`.`;
+    this.send(res, { response_type: 'in_channel', text: mssg })
   }
 
   remove(res) {
-    const mssg = `Your reminder has been canceled.`;
-    res.status(200). json({response_type: 'in_channel', text: mssg});
+    const mssg = `Your teams reminder has been canceled.`;
+    this.send(res, { response_type: 'in_channel', text: mssg });
   }
 
-  error(res, url) {
+  error(res) {
 
   }
 
-  help(res, url) {
-
+  help(res) {
+    const mssg = `All the help text.`;
+    this.send(res, {text: mssg});
   }
 
 }

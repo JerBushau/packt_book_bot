@@ -1,5 +1,6 @@
 'use strict'
 const app = require('../app/packtApp');
+
 app.init();
 
 module.exports = function (req, res, next) {
@@ -17,17 +18,19 @@ module.exports = function (req, res, next) {
 
   // help
   } else if (text && text === 'help') {
-    return res.status(200).json()
+    app.mssgr.help(res);
 
   // private response, in case you don't want to disturb your team.
-  } else if (text && text === 'private') {
+  } else if (text && text === 'public') {
+    app.mssgr.book(res, 'in_channel');
 
   // default
   } else if (!text){
+    app.mssgr.book(res, false);
 
   // invalid command
   } else {
     return res.status(200).json({text: 'valid commands: `/freebook`, `/freebook private`, `/freebook 0-23`, ' +
-      '`/freebook cancel` or `/freebook help`'})
+      '`/freebook cancel` or `/freebook help`'});
   }
 }
