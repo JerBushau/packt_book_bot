@@ -14,15 +14,14 @@ router.get('/reminders', function(req, res) {
   });
 });
 
-// POST new reminder
-router.post('/reminders', function(req, res) {
-  const reminder = req.body;
-  console.log(req.body);
-  Reminder.create(reminder, function(err, reminder) {
+// DELETE reminder by teamID(which are unique)
+router.delete('/reminder/:teamID', function(req, res) {
+  const teamId = req.params.teamID;
+  Reminder.findOneAndRemove(teamId, function(err, result) {
     if (err) {
       return res.status(500).json({ message: err.message });
     }
-    res.json({ reminder: reminder, message: 'Reminder created' });
+    res.json({ message: 'Reminder deleted' });
   });
 });
 
@@ -34,6 +33,17 @@ router.delete('/reminders/:id', function(req, res) {
       return res.status(500).json({ message: err.message });
     }
     res.json({ message: 'Reminder deleted' });
+  });
+});
+
+// POST new reminder
+router.post('/reminders', function(req, res) {
+  const reminder = req.body;
+  Reminder.create(reminder, function(err, reminder) {
+    if (err) {
+      return res.status(500).json({ message: err.message });
+    }
+    res.json({ reminder: reminder, message: 'Reminder created' });
   });
 });
 
