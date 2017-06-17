@@ -19,8 +19,7 @@ class App {
 
   add(res, reminder) {
     if (this.isDuplicate(reminder)) {
-      // this.mssgr.error()
-      return console.error('only one reminder can be set per team!')
+      return this.mssgr.error(res, 'limit')
     };
     this.model.add(reminder);
     this.db.add(reminder);
@@ -30,7 +29,7 @@ class App {
 
   remove(res, teamID) {
     if (!this.isDuplicate(teamID)) {
-      // this.messgr.error()
+      return this.mssgr.error(res, 'limit')
     }
     this.model.remove(teamID);
     this.db.remove(teamID);

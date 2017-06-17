@@ -26,7 +26,7 @@ class Model {
   schedule(reminder) {
     let self = this;
     let newRem = nodeSchedule.scheduleJob(`${reminder.time} * * * * *`, () => {
-      this.mssgr.book()
+      this.mssgr.postBook(reminder)
     });
     newRem.teamID = reminder.teamID;
     return newRem

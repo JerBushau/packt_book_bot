@@ -34,10 +34,23 @@ class Mssgr {
     });
   }
 
-  postBook({url, }) {
-    bookMssg()
+  postBook(reminder) {
+    this.bookMssg()
     .then(mssg => {
-      request.post({url, });
+      let options = {
+        method: 'POST',
+        uri: reminder.url,
+        json: {
+          response_type: 'in_channel',
+          contentType: 'application/json',
+          text: mssg
+        }
+      };
+      request.post(options, function(err, response) {
+        if (err || response.statusCode !== 200) {
+          console.log(err)
+        }
+      });
     });
   }
 
@@ -71,8 +84,12 @@ To cancel type: \`/freebook cancel\`.`;
     this.send(res, { response_type: 'in_channel', text: mssg });
   }
 
-  error(res) {
-
+  error(res, error) {
+    this.errors = {
+      limit: 'Only one reminder allowed per team.',
+    };
+    const err = this.errors[error];
+    this.send(res, {text: err});
   }
 
   help(res) {
