@@ -1,6 +1,5 @@
 'use strict'
 
-const Mssgr = require('./mssgr');
 const nodeSchedule = require('node-schedule');
 
 class Model {

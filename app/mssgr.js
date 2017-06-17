@@ -69,14 +69,14 @@ class Mssgr {
   book(res, type) {
     this.bookMssg()
     .then(mssg => {
-      this.send(res, { response_type: type, text: mssg})
+      this.send(res, { response_type: type, text: mssg});
     });
   }
 
   add(res, time) {
     const mssg = `Your reminder is scheduled for ${this.formatTime(time)} in this channel every day!
 To cancel type: \`/freebook cancel\`.`;
-    this.send(res, { response_type: 'in_channel', text: mssg })
+    this.send(res, { response_type: 'in_channel', text: mssg });
   }
 
   remove(res) {
@@ -86,7 +86,8 @@ To cancel type: \`/freebook cancel\`.`;
 
   error(res, error) {
     this.errors = {
-      limit: 'Only one reminder allowed per team.',
+      limit: 'Only one reminder currently allowed per team.',
+      invalid: 'The valid commands are: `/freebook`, `/freebook public`, `/freebook 0-23`, `/freebook cancel`',
     };
     const err = this.errors[error];
     this.send(res, {text: err});

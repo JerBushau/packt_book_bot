@@ -30,7 +30,6 @@ module.exports = function (req, res, next) {
 
   // invalid command
   } else {
-    return res.status(200).json({text: 'valid commands: `/freebook`, `/freebook private`, `/freebook 0-23`, ' +
-      '`/freebook cancel` or `/freebook help`'});
+    app.mssgr.error(res, 'invalid');
   }
 }
