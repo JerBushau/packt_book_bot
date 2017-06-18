@@ -6,10 +6,6 @@ const cheerio = require('cheerio');
 const packt = 'https://www.packtpub.com/packt/offers/free-learning/';
 
 class Mssgr {
-  constructor() {
-    this.errors = [];
-  }
-
   formatTime(mTime) {
     mTime = parseInt(mTime);
     if (mTime === 0) {
@@ -54,7 +50,8 @@ class Mssgr {
     });
   }
 
-  send(res, {response_type='ephemeral', text}) {
+  // add the ability to add optional args such as an attachments array etc...
+  send(res, { response_type='ephemeral', text }) {
     let options =  {
       response_type: response_type,
       contentType: 'application/json',
@@ -69,13 +66,13 @@ class Mssgr {
   book(res, type) {
     this.bookMssg()
     .then(mssg => {
-      this.send(res, { response_type: type, text: mssg});
+      this.send(res, { response_type: type, text: mssg });
     });
   }
 
   add(res, time) {
-    const mssg = `Your reminder is scheduled for ${this.formatTime(time)} in this channel every day!
-To cancel type: \`/freebook cancel\`.`;
+    const mssg = `Your teams reminder is scheduled for ${this.formatTime(time)} in this channel every day!` +
+      '\nTo cancel type: \`/freebook cancel\`.';
     this.send(res, { response_type: 'in_channel', text: mssg });
   }
 
@@ -85,17 +82,29 @@ To cancel type: \`/freebook cancel\`.`;
   }
 
   error(res, error) {
-    this.errors = {
+    const errors = {
       limit: 'Only one reminder currently allowed per team.',
-      invalid: 'The valid commands are: `/freebook`, `/freebook public`, `/freebook 0-23`, `/freebook cancel`',
+      notFound: 'To schedule a reminder type `/freebook x` where x is a number 0-23.\nType `/freebook' +
+        ' help` for more information`',
+      invalid: 'Valid commands are:\n`/freebook`,\n`/freebook public`,\n`/freebook 0-23`,' +
+        '\n`/freebook cancel`' +
+        '\nType `/freebook help` for more info.',
     };
-    const err = this.errors[error];
-    this.send(res, {text: err});
+    const err = errors[error];
+    this.send(res, { text: err });
   }
 
   help(res) {
-    const mssg = `All the help text.`;
-    this.send(res, {text: mssg});
+    const mssg = '*Freebookbot* is a slack application that will help you and your team stay up on' +
+      ' the Packt Publishing free learning offer of the day. \n*It provides the following options:*' +
+      '\n>`/freebook` will post the free learning offer, only visible to you.' +
+      '\n\n>`/freebook public` will post the free learning offer in the current channel.' +
+      '\n\n>`/freebook x` where x is a number 0-23 will set a reminder to post the free learning' +
+      ' offer at the specified time daily. For Example: to set the bot to post daily at 8am type' +
+      ' `/freebook 8` or for 2pm type `/freebook 14` etc... Only one reminder allowed per team.' +
+      '\n\n>`/freebook cancel` will cancel your teams reminder.' +
+      '\n\n>`freebook help` displays this message. :v:';
+    this.send(res, { text: mssg });
   }
 
 }
