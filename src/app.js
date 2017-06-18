@@ -3,15 +3,18 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
-const packtbot = require('./packtbot');
+const packtbot = require('../app/packtbot');
+const router = require('./api');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+require('./database');
+
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // serve static files
-app.use(express.static(__dirname + '/public'));
+app.use('/', express.static(__dirname + '/public'));
 
 // oauth route
 app.get('/oauth', function(req, res){
@@ -26,10 +29,9 @@ app.get('/oauth', function(req, res){
       code: req.query.code
   }};
 
-  // convert to modern promise style requests at some point
   request.post('https://slack.com/api/oauth.access', data, function (error, response, body) {
     if (!error && response.statusCode == 200) {
-      // get the auth token
+      // get the auth token and webhook url
       const token = JSON.parse(body).access_token;
 
       // get the team domain name to redirect to the team URL after auth(from tutorial debating usefulness vs a success page)
@@ -49,6 +51,9 @@ app.get('/oauth', function(req, res){
     }
   });
 });
+
+// api route
+app.use('/api', router);
 
 // bot route
 app.post('/freebook', packtbot);
