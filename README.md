@@ -15,4 +15,4 @@ The goal of this app is to help share the [Packt Publishing](https://www.packtpu
 #### Install:
 https://packtpubbot.herokuapp.com/
 
-###### *I myself nor is this app, in anyway affiliated with Packt Publishing. Just a fan of free books.*
+###### *I myself nor is this app, in any way affiliated with Packt Publishing. Just a fan of free books.*
