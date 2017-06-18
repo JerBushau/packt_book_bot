@@ -3,7 +3,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
-const packtbot = require('./packtbot');
+const packtbot = require('../app/packtbot');
 const router = require('./api');
 
 const app = express();
