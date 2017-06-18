@@ -10,7 +10,7 @@ module.exports = function (req, res, next) {
 
   // create a reminder
   if (text && /^((?:[0-9]|1[0-9]|2[0-3]))$/.test(text)) {
-    app.add(res, {url: webhookURL, teamID: teamID, time: text});
+    app.add(res, { url: webhookURL, teamID: teamID, time: text });
 
   // cancel reminder
   } else if(text && text === 'cancel') {

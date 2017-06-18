@@ -10,7 +10,6 @@ class Model {
 
   add(reminder) {
     this.reminders.push(this.schedule(reminder));
-    console.log(this.reminders);
   }
 
   remove(id) {
@@ -23,8 +22,7 @@ class Model {
   }
 
   schedule(reminder) {
-    let self = this;
-    let newRem = nodeSchedule.scheduleJob(`${reminder.time} * * * * *`, () => {
+    let newRem = nodeSchedule.scheduleJob(`0 ${reminder.time} * * *`, () => {
       this.mssgr.postBook(reminder)
     });
     newRem.teamID = reminder.teamID;

@@ -1,7 +1,7 @@
 'use strict'
 
 const request = require('request');
-const apiURL = 'https://aa68a38e.ngrok.io/api';
+const apiURL = 'https://8652d9ce.ngrok.io/api';
 
 class Store {
   get() {
@@ -16,7 +16,7 @@ class Store {
   }
 
   add(reminder) {
-    request.post(`${apiURL}/reminders`, {form: reminder});
+    request.post(`${apiURL}/reminders`, { form: reminder });
   }
 
   remove(id) {

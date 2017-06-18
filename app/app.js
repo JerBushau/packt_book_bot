@@ -29,7 +29,7 @@ class App {
 
   remove(res, teamID) {
     if (!this.isDuplicate(teamID)) {
-      return this.mssgr.error(res, 'limit')
+      return this.mssgr.error(res, 'notFound')
     }
     this.model.remove(teamID);
     this.db.remove(teamID);
