@@ -1,10 +1,14 @@
 'use strict'
 
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const request = require('request');
+const api = require('./api');
+
+// implement a router to handle 
+// non api routes
 const packtbot = require('../app/packtbot');
-const router = require('./api');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -14,7 +18,7 @@ require('./database');
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // serve static files
-app.use('/', express.static(__dirname + '/public'));
+app.use('/', express.static(path.join(__dirname, '..', '/public')));
 
 // oauth route
 app.get('/oauth', function(req, res){
@@ -34,6 +38,7 @@ app.get('/oauth', function(req, res){
       // get the auth token and webhook url
       const token = JSON.parse(body).access_token;
 
+      console.log(response, body);
       // get the team domain name to redirect to the team URL after auth(from tutorial debating usefulness vs a success page)
       request.post('https://slack.com/api/team.info', {form: {token: token}}, function (error, response, body) {
         if (!error && response.statusCode == 200) {
@@ -53,7 +58,7 @@ app.get('/oauth', function(req, res){
 });
 
 // api route
-app.use('/api', router);
+app.use('/api', api);
 
 // bot route
 app.post('/freebook', packtbot);

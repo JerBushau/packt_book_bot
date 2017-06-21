@@ -2,6 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
     <title>PacktpubBookBot | Share the packtpub free book of the day.</title>
     <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="css/main.css">
@@ -10,33 +11,54 @@
     <div class="site-wrapper">
 
       <header>
-        <img class="logo" src="img/packtpubbookbot-site.png">
-      </header>
-
-      <article>
-        <h1>A helpful slack app to share the <a href="https://www.packtpub.com/packt/offers/free-learning">Packtpub.com</a> free learning book of the day with your team.</h1>
-
-        <p>To use it, type <code>/freebook</code> and you will recieve a response in the current channel with the title of today's free book and the link to sign-in and download it. There is also <code>/freebook</code> private if you'd prefer a private response.</p>
-
-        <section>
-          <h1>Install it now!</h1>
-
-          <a href="https://slack.com/oauth/authorize?&client_id=156563216324.185041095282&scope=commands+team%3Aread"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" /></a>
-        </section>
-      </article>
-
-      <footer>
-        <p><small>Created by: Jer Bushau</small></p>
-
-        <div class="github-container">
-          <a class="github-link" href="https://github.com/JerBushau/packt_book_bot">
-            <small>Github</small>
-            <img class="github-logo" src="img/github.svg">
-          </a>
-
+        <div class="brand">
+          <img class="logo" src="img/packtpubbookbot-site.png">
+          <h1 class="title">FreebookApp</h1>
         </div>
 
+        <div class="github-container">
+          <a class="github-logo" href="https://github.com/JerBushau/packt_book_bot"></a>
+        </div>
+      </header>
 
+      <section class="welcome">
+        <h1>Never miss another <a href="https://www.packtpub.com/packt/offers/free-learning">Packt Publishing</a> free learning offer again!</h1>
+        <p>FreebookApp is a slack application that provides one slash command with a few options. Created to help keep you and your team up to date on the awesome Packt Publishing free learning offer.</p>
+      </section>
+
+      <section class="info">
+        <img class="exmpl-img" src="img/app-site.gif">
+
+        <h3>Everything you need to know:</h3>
+
+        <code class="key">/freebook</code>
+        <p class="def">Sends user a private message containing the free learning offer and link to log in and download.</p>
+
+        <code class="key">/freebook public</code>
+        <p class="def">Sends current channel a message containing the free learning offer and link to log in and download.</p>
+
+        <code class="key">/freebook x</code>
+        <p class="def">Schedules a reminder to post the free learning offer in the current channel, daily at the specified time. Where x is a number 0-23. To set a reminder for 8am daily: <code>/freebook 8</code>, for 2pm daily: <code>/freebook 14</code> etc..</p>
+
+        <code class="key">/freebook cancel</code>
+        <p class="def">Cancels the teams scheduled reminder.</p>
+
+        <code class="key">/freebook help</code>
+        <p class="def">Sends user a message with helpful information about FreebookBot</p>
+      </section>
+
+      <div class="install-banner">
+        <div class="install-banner-content">
+          <h1>Install it!</h1>
+
+          <a href="https://slack.com/oauth/authorize?&client_id=156563216324.185041095282&scope=commands+team%3Aread"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"/></a>
+        </div>
+      </div>
+
+      <footer>
+        <p>< > by: Jer Bushau</p>
+
+        <p><i>This application is in no way affiliated with <a href="https://www.packtpub.com/packt/offers/free-learning">Packt Publishing</a></i></p>
       </footer>
 
     </div> <!-- end site-wrapper -->
