@@ -70,6 +70,10 @@ class Mssgr {
     });
   }
 
+  welcome(res) {
+    const mssg = 'Thank you for installing Freebookbot!'
+  }
+
   add(res, time) {
     const mssg = `Your teams reminder is scheduled for ${this.formatTime(time)} in this channel every day!` +
       '\nTo cancel type: \`/freebook cancel\`.';

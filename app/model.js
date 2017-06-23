@@ -4,12 +4,16 @@ const nodeSchedule = require('node-schedule');
 
 class Model {
   constructor(mssgr) {
-    this.reminders = [];
+    this.teams = [];
     this.mssgr = mssgr;
   }
 
+  addNewTeam(team) {
+    this.teams.push(team)
+  }
+
   add(reminder) {
-    this.reminders.push(this.schedule(reminder));
+    this.teams.push(reminder);
   }
 
   remove(id) {

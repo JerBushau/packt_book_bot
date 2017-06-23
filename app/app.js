@@ -17,6 +17,11 @@ class App {
     });
   }
 
+  addNewTeam(team) {
+    this.model.addNewTeam(team);
+    this.db.addNewTeam(team);
+  }
+
   add(res, reminder) {
     if (this.isDuplicate(reminder)) {
       return this.mssgr.error(res, 'limit')

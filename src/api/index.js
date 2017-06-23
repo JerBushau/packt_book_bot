@@ -1,49 +1,49 @@
 'use strict'
 
 const express = require('express');
-const Reminder = require('../models/reminder');
+const Team = require('../models/team');
 const router = express.Router();
 
-// GET all reminders
-router.get('/reminders', function(req, res) {
-  Reminder.find({}, function(err, reminders) {
+// GET all teams
+router.get('/teams', function(req, res) {
+  Team.find({}, function(err, teams) {
     if (err) {
       return res.status(500).json({ message: err.message });
     }
-    res.json({ reminders: reminders });
+    res.json({ teams: teams });
   });
 });
 
-// DELETE reminder by teamID(which are unique)
-router.delete('/reminder/:teamID', function(req, res) {
+// DELETE team by teamID(which are unique)
+router.delete('/team/:teamID', function(req, res) {
   const teamId = req.params.teamID;
-  Reminder.findOneAndRemove(teamId, function(err, result) {
+  Team.findOneAndRemove(teamId, function(err, result) {
     if (err) {
       return res.status(500).json({ message: err.message });
     }
-    res.json({ message: 'Reminder deleted' });
+    res.json({ message: 'team deleted' });
   });
 });
 
 // DELETE
-router.delete('/reminders/:id', function(req, res) {
+router.delete('/teams/:id', function(req, res) {
   const id = req.params.id;
-  Reminder.findByIdAndRemove(id, function(err, result) {
+  Team.findByIdAndRemove(id, function(err, result) {
     if (err) {
       return res.status(500).json({ message: err.message });
     }
-    res.json({ message: 'Reminder deleted' });
+    res.json({ message: 'team deleted' });
   });
 });
 
-// POST new reminder
-router.post('/reminders', function(req, res) {
-  const reminder = req.body;
-  Reminder.create(reminder, function(err, reminder) {
+// POST new team
+router.post('/teams', function(req, res) {
+  const team = req.body;
+  Team.create(team, function(err, team) {
     if (err) {
       return res.status(500).json({ message: err.message });
     }
-    res.json({ reminder: reminder, message: 'Reminder created' });
+    res.json({ team: team, message: 'team created' });
   });
 });
 
