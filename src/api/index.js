@@ -14,7 +14,7 @@ router.get('/teams', function(req, res) {
   });
 });
 
-// DELETE team by teamID(which are unique)
+// DELETE team by teamID(which should be unique)
 router.delete('/team/:teamID', function(req, res) {
   const teamId = req.params.teamID;
   Team.findOneAndRemove(teamId, function(err, result) {
@@ -25,7 +25,7 @@ router.delete('/team/:teamID', function(req, res) {
   });
 });
 
-// DELETE
+// DELETE by _id
 router.delete('/teams/:id', function(req, res) {
   const id = req.params.id;
   Team.findByIdAndRemove(id, function(err, result) {
@@ -33,6 +33,20 @@ router.delete('/teams/:id', function(req, res) {
       return res.status(500).json({ message: err.message });
     }
     res.json({ message: 'team deleted' });
+  });
+});
+
+// PUT
+router.put('/team/:id', function( req, res) {
+  const id = req.params.id;
+  const team = req.body;
+
+  Team.findByIdAndUpdate(id, team, { new: true }, function(err, team) {
+    if (err) {
+      return res.status(500).json({ message: err.message });
+    }
+    res.json({team: team, message: 'team updated'});
+
   });
 });
 

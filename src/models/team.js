@@ -6,7 +6,7 @@ const reminderSchema = new mongoose.Schema({
   url: String,
   teamID: String,
   time: Number,
-  is_scheduled: Boolean
+  isScheduled: Boolean
 });
 
 const model = mongoose.model('Reminder', reminderSchema);

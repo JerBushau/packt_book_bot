@@ -1,7 +1,7 @@
 'use strict'
 
 const request = require('request');
-const apiURL = 'https://d6135493.ngrok.io/api';
+const apiURL = 'https://a0dea20e.ngrok.io/api';
 
 class Store {
   get() {
@@ -9,20 +9,25 @@ class Store {
       request.get(`${apiURL}/teams`, (err, response, body) => {
         if (err) { console.error(err); }
         const _body = JSON.parse(response.body);
-        const teams = _body.teams;
-        return resolve(teams);
+        const results = _body.teams;
+        return resolve(results);
       });
     });
   }
 
-  addNewTeam(team) {
+  addNewTeam(team, cb) {
     request.post(`${apiURL}/teams`, { form: team });
+    if (cb) { cb(); }
   }
 
-  add(reminder) {
-    request.post(`${apiURL}/teams`, { form: reminder });
+
+  update(team, cb) {
+    request.put(`${apiURL}/team/${team._id}`, { form: team });
+    if (cb) { cb(); }
+
   }
 
+  // remove by teamID (just testing stuff)
   remove(id) {
     request.delete(`${apiURL}/team/'${id}'`);
   }

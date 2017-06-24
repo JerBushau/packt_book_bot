@@ -3,55 +3,51 @@
 class App {
   constructor(mssgr, model, db) {
     this.mssgr = new mssgr;
-    this.model = new model(this.mssgr);
-    this.db = new db;
-  }
-
-  // On start up
-  init() {
-    this.db.get()
-    .then(reminders => {
-      reminders.forEach(reminder => {
-        this.model.add(reminder);
-      });
-    });
+    this.model = new model(new db);
   }
 
   addNewTeam(team) {
+    // re-write isDup to work to assure uniqueness
     this.model.addNewTeam(team);
-    this.db.addNewTeam(team);
+    this.mssgr.welcome(team);
   }
 
-  add(res, reminder) {
-    if (this.isDuplicate(reminder)) {
-      return this.mssgr.error(res, 'limit')
-    };
-    this.model.add(reminder);
-    this.db.add(reminder);
-    this.mssgr.add(res, reminder.time);
-
-  }
-
-  remove(res, teamID) {
-    if (!this.isDuplicate(teamID)) {
-      return this.mssgr.error(res, 'notFound')
-    }
-    this.model.remove(teamID);
-    this.db.remove(teamID);
-    this.mssgr.remove(res);
-  }
-
-  isDuplicate(reminder) {
-    if (typeof reminder === 'object') {
-      return this.model.reminders.some(item => {
-        return reminder.teamID === item.teamID
-      });
-    }
-    // assume that reminder is just teamID if not object
-    return this.model.reminders.some(item => {
-      return reminder === item.teamID
+  // dry these up
+  scheduleReminder(res, teamID, time) {
+    this.model.teams.forEach(team => {
+      if (team.teamID === teamID) {
+        if (team.isScheduled) {
+          return this.mssgr.error(res, 'limit')
+        }
+        this.model.scheduleReminder(teamID, time);
+        return this.mssgr.schedule(res, time)
+      }
     });
   }
+
+  cancelReminder(res, teamID) {
+    this.model.teams.forEach(team => {
+      if (team.teamID === teamID) {
+        if (!team.isScheduled) {
+          return this.mssgr.error(res, 'notScheduled');
+        }
+        this.model.cancelReminder(teamID);
+        return this.mssgr.cancel(res)
+      }
+    });
+  }
+
+  // isDuplicate(team) {
+  //   if (typeof team === 'object') {
+  //     return this.model.reminders.some(item => {
+  //       return team.teamID === item.teamID
+  //     });
+  //   }
+  //   // assume that team is just teamID if not object
+  //   return this.model.reminders.some(item => {
+  //     return team === item.teamID
+  //   });
+  // }
 
 }
 

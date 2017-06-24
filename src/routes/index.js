@@ -32,6 +32,7 @@ router.get('/oauth', function(req, res){
         teamID:_body.team_id
       };
 
+      // make new entry when team installs app
       packtbot.addNewTeam(newTeam)
 
       // get the team domain name to redirect to the team URL after auth
@@ -60,12 +61,11 @@ router.post('/freebook', function (req, res, next) {
 
   // create a reminder
   if (text && /^((?:[0-9]|1[0-9]|2[0-3]))$/.test(text)) {
-    packtbot.add(res, { time: text });
+    packtbot.scheduleReminder(res, teamID, text);
 
   // cancel reminder
   } else if(text && text === 'cancel') {
-    packtbot.remove(res, teamID);
-
+    packtbot.cancelReminder(res, teamID)
   // help
   } else if (text && text === 'help') {
     packtbot.mssgr.help(res);

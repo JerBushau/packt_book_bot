@@ -30,27 +30,34 @@ class Mssgr {
     });
   }
 
-  postBook(reminder) {
-    this.bookMssg()
-    .then(mssg => {
-      let options = {
-        method: 'POST',
-        uri: reminder.url,
-        json: {
-          response_type: 'in_channel',
-          contentType: 'application/json',
-          text: mssg
-        }
-      };
-      request.post(options, function(err, response) {
-        if (err || response.statusCode !== 200) {
-          console.log(err)
-        }
-      });
+  // look into adding the ability to add optional args such as an attachments array etc...
+  // post to webhook
+  post(team, mssg) {
+    let options = {
+      uri: team.url,
+      json: {
+        response_type: 'in_channel',
+        contentType: 'application/json',
+        text: mssg
+      }
+    };
+    request.post(options, function(err, response) {
+      if (err || response.statusCode !== 200) {
+        console.log(err)
+      }
     });
   }
 
-  // add the ability to add optional args such as an attachments array etc...
+  // scrape book then post
+  postBook(team) {
+    this.bookMssg()
+    .then(mssg => {
+      post(team, mssg)
+    });
+  }
+
+  // look into adding the ability to add optional args such as an attachments array etc...
+  // send response to slash commands
   send(res, { response_type='ephemeral', text }) {
     let options =  {
       response_type: response_type,
@@ -70,17 +77,26 @@ class Mssgr {
     });
   }
 
-  welcome(res) {
-    const mssg = 'Thank you for installing Freebookbot!'
+  welcome(team) {
+    const mssg = 'Thank you for installing Freebookbot!';
+    let options = {
+      uri: team.url,
+      json: {
+        response_type: 'in_channel',
+        contentType: 'application/json',
+        text: mssg
+      }
+    };
+    request.post(options, err => { if (err) { console.log(err)} });
   }
 
-  add(res, time) {
-    const mssg = `Your teams reminder is scheduled for ${this.formatTime(time)} in this channel every day!` +
+  schedule(res, time) {
+    const mssg = `Your teams reminder is scheduled for ${this.formatTime(time)} every day!` +
       '\nTo cancel type: \`/freebook cancel\`.';
     this.send(res, { response_type: 'in_channel', text: mssg });
   }
 
-  remove(res) {
+  cancel(res) {
     const mssg = `Your teams reminder has been canceled.`;
     this.send(res, { response_type: 'in_channel', text: mssg });
   }
@@ -88,7 +104,7 @@ class Mssgr {
   error(res, error) {
     const errors = {
       limit: 'Only one reminder currently allowed per team.',
-      notFound: 'To schedule a reminder type `/freebook x` where x is a number 0-23.\nType `/freebook' +
+      notScheduled: 'To schedule a reminder type `/freebook x` where x is a number 0-23.\nType `/freebook' +
         ' help` for more information`',
       invalid: 'Valid commands are:\n`/freebook`,\n`/freebook public`,\n`/freebook 0-23`,' +
         '\n`/freebook cancel`' +

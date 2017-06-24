@@ -3,34 +3,40 @@
 const nodeSchedule = require('node-schedule');
 
 class Model {
-  constructor(mssgr) {
+  constructor(db) {
     this.teams = [];
-    this.mssgr = mssgr;
+    this.db = db;
+  }
+
+  refresh() {
+    this.db.get()
+    .then(teams => {
+      this.teams = teams;
+    });
   }
 
   addNewTeam(team) {
-    this.teams.push(team)
+    this.db.addNewTeam(team, this.refresh);
   }
 
-  add(reminder) {
-    this.teams.push(reminder);
-  }
-
-  remove(id) {
-    this.reminders.forEach((reminder, i) => {
-      if (reminder.teamID === id) {
-        this.reminders.splice(i, 1);
-        reminder.cancel()
+  scheduleReminder(id, time) {
+    this.teams.find(team => {
+      if (team.teamID === id) {
+        team.isScheduled = true;
+        team.time = time;
+        return this.db.update(team, _ => { this.refresh() });
       }
     });
   }
 
-  schedule(reminder) {
-    let newRem = nodeSchedule.scheduleJob(`0 ${reminder.time} * * *`, () => {
-      this.mssgr.postBook(reminder)
+  cancelReminder(id) {
+    this.teams.find(team => {
+      if (team.teamID === id) {
+        team.time = null;
+        team.isScheduled = false;
+        return this.db.update(team, _ => { this.refresh() });
+      }
     });
-    newRem.teamID = reminder.teamID;
-    return newRem
   }
 
 }

@@ -7,6 +7,6 @@ const App = require('./app');
 
 const app = new App(Mssgr, Model, Store);
 
-app.init();
+app.model.refresh();
 
 module.exports = app;
