@@ -15,7 +15,9 @@ class Model {
   }
 
   addNewTeam(team) {
-    this.db.addNewTeam(team, this.refresh);
+    // not sure how else to get the webhook url other than to add to db
+    // when team installs app..
+    this.db.addNewTeam(team, _ => { this.refresh() });
   }
 
   toggleReminder(team, time=null) {

@@ -8,6 +8,7 @@ const request = require('request');
 // import app here
 const packtbot = require('../../app/packtbot');
 
+// oauth route
 router.get('/oauth', function(req, res){
   if (!req.query.code) {
     // access denied
@@ -39,10 +40,7 @@ router.get('/oauth', function(req, res){
       // (from tutorial debating usefulness vs a success page)
       request.post('https://slack.com/api/team.info', {form: {token: token}}, function (error, response, body) {
         if (!error && response.statusCode === 200) {
-          // add newTeam to db and model
-
           if(JSON.parse(body).error == 'missing_scope') {
-            // add newTeam to db and model
             return res.send('packtpubbot has been added to your team!');
 
           } else {
@@ -55,6 +53,7 @@ router.get('/oauth', function(req, res){
   });
 });
 
+// bot route
 router.post('/freebook', function (req, res, next) {
   let text = req.body.text.toLowerCase();
   let teamID = req.body.team_id;

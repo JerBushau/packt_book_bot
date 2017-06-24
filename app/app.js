@@ -17,7 +17,7 @@ class App {
       let currTime = new Date().getHours();
       this.model.teams.find(team => {
         if (team.isScheduled && team.time === currTime) {
-          // either post book here
+          // either post book here instead of pushing to array
           scheduledReminders.push(team)
         }
       });
