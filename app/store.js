@@ -15,15 +15,13 @@ class Store {
     });
   }
 
-  addNewTeam(team, cb) {
+  addNewTeam(team) {
     request.post(`${apiURL}/teams`, { form: team });
-    if (cb) { cb(); }
   }
 
 
-  update(team, cb) {
+  update(team) {
     request.put(`${apiURL}/team/${team._id}`, { form: team });
-    if (cb) { cb(); }
 
   }
 

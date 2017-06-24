@@ -52,7 +52,7 @@ class Mssgr {
   postBook(team) {
     this.bookMssg()
     .then(mssg => {
-      post(team, mssg)
+      this.post(team, mssg)
     });
   }
 

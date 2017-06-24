@@ -5,7 +5,6 @@ const router = express.Router();
 
 const request = require('request');
 
-// import app here
 const packtbot = require('../../app/packtbot');
 
 // oauth route
@@ -26,7 +25,7 @@ router.get('/oauth', function(req, res){
   request.post('https://slack.com/api/oauth.access', data, function (error, response, body) {
     if (!error && response.statusCode === 200) {
       // get the auth token and webhook url
-      let _body = JSON.parse(body);
+      const _body = JSON.parse(body);
       const token = _body.access_token;
       const newTeam = {
         url: _body.incoming_webhook.url,
@@ -60,7 +59,7 @@ router.post('/freebook', function (req, res, next) {
 
   // create a reminder
   if (text && /^((?:[0-9]|1[0-9]|2[0-3]))$/.test(text)) {
-    packtbot.scheduleReminder(res, teamID, text);
+    packtbot.scheduleReminder(res, teamID, parseInt(text));
 
   // cancel reminder
   } else if(text && text === 'cancel') {

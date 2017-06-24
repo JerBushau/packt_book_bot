@@ -11,24 +11,23 @@ class App {
   // function that will loop through and post free book to teams every hour
   // working in tests need to config it to post mssg...
   init() {
-    this.model.refresh()
+    this.model.init();
     nodeSchedule.scheduleJob('0 * * * *', _ => {
-      let scheduledReminders = [];
       let currTime = new Date().getHours();
       this.model.teams.find(team => {
         if (team.isScheduled && team.time === currTime) {
-          // either post book here instead of pushing to array
-          scheduledReminders.push(team)
+          // post book here instead of pushing to array
+          console.log(`i posted at ${team.time} for ${team.teamID}.`);
+          this.mssgr.postBook(team);
         }
       });
-      // or loop through schedReminders and post book to each here...
-      console.log(scheduledReminders)
     });
   }
 
   // when a team installs the app add team to db
   addNewTeam(team) {
     if (this.isDuplicate(team)) {
+      // possibly delete old entry or update if reinstall takes place...
       return new error('Team already exists.')
     }
     this.model.addNewTeam(team);
@@ -42,8 +41,8 @@ class App {
         if (team.isScheduled) {
           return this.mssgr.error(res, 'limit')
         }
-        this.model.toggleReminder(team, time);
-        return this.mssgr.schedule(res, time)
+        this.model.scheduleReminder(team, time);
+        this.mssgr.schedule(res, time);
       }
     });
   }
@@ -54,8 +53,8 @@ class App {
         if (!team.isScheduled) {
           return this.mssgr.error(res, 'notScheduled');
         }
-        this.model.toggleReminder(team);
-        return this.mssgr.cancel(res)
+        this.model.cancelReminder(team);
+        this.mssgr.cancel(res);
       }
     });
   }
