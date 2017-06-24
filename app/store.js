@@ -19,10 +19,8 @@ class Store {
     request.post(`${apiURL}/teams`, { form: team });
   }
 
-
   update(team) {
     request.put(`${apiURL}/team/${team._id}`, { form: team });
-
   }
 
   // remove by teamID (just testing stuff)

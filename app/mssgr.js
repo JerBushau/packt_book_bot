@@ -18,6 +18,7 @@ class Mssgr {
     return mTime + ' am'
   }
 
+  // scrape book
   bookMssg() {
     return new Promise((resolve, reject) => {
       request(packt, function (err, response, body) {

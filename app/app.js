@@ -34,7 +34,7 @@ class App {
     this.mssgr.welcome(team);
   }
 
-  // dry these up, possibly do toggle like in model
+  // dry these up
   scheduleReminder(res, teamID, time) {
     this.model.teams.find(team => {
       if (team.teamID === teamID) {
@@ -59,6 +59,7 @@ class App {
     });
   }
 
+  // maybe put this in model?
   isDuplicate(team) {
     if (typeof team === 'object') {
       return this.model.teams.some(item => {
