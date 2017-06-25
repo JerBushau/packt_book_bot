@@ -18,6 +18,7 @@ class Model {
   addNewTeam(team) {
     // not sure how else to get the webhook url other than to add to db
     // when team installs app..
+    this.teams.push(team);
     this.db.addNewTeam(team);
   }
 
