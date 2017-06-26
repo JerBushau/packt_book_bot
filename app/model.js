@@ -6,8 +6,8 @@ class Model {
     this.db = db;
   }
 
-  // init data
-  init() {
+  // refresh data
+  refresh() {
     this.db.get()
     .then(teams => {
       this.teams = teams;
@@ -16,10 +16,10 @@ class Model {
   }
 
   addNewTeam(team) {
-    // not sure how else to get the webhook url other than to add to db
-    // when team installs app..
-    this.teams.push(team);
-    this.db.addNewTeam(team);
+    return new Promise((resolve, reject) => {
+      this.db.addNewTeam(team);
+      resolve();
+    });
   }
 
   scheduleReminder(team, time) {
@@ -33,6 +33,7 @@ class Model {
     team.time = null;
     this.db.update(team);
   }
+
 }
 
 module.exports = Model;

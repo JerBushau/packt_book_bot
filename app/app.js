@@ -9,14 +9,12 @@ class App {
   }
 
   // function that will loop through and post free book to teams every hour
-  // working in tests need to config it to post mssg...
   init() {
-    this.model.init();
+    this.model.refresh();
     nodeSchedule.scheduleJob('0 * * * *', _ => {
       let currTime = new Date().getHours();
       this.model.teams.find(team => {
         if (team.isScheduled && team.time === currTime) {
-          // post book here instead of pushing to array
           console.log(`i posted at ${team.time} for ${team.teamID}.`);
           this.mssgr.postBook(team);
         }
@@ -28,10 +26,14 @@ class App {
   addNewTeam(team) {
     if (this.isDuplicate(team)) {
       // possibly delete old entry or update if reinstall takes place...
-      return new error('Team already exists.')
+      return console.error('Team already exists.')
     }
-    this.model.addNewTeam(team);
-    this.mssgr.welcome(team);
+    this.model.addNewTeam(team)
+    .then(_ => {
+      // update model
+      this.model.refresh();
+      this.mssgr.welcome(team);
+    });
   }
 
   // dry these up
@@ -59,7 +61,7 @@ class App {
     });
   }
 
-  // maybe put this in model?
+  // maybe put this in model? maybe create a team obj?
   isDuplicate(team) {
     if (typeof team === 'object') {
       return this.model.teams.some(item => {

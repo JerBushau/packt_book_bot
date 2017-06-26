@@ -64,6 +64,7 @@ router.post('/freebook', function (req, res, next) {
   // cancel reminder
   } else if(text && text === 'cancel') {
     packtbot.cancelReminder(res, teamID)
+
   // help
   } else if (text && text === 'help') {
     packtbot.mssgr.help(res);
