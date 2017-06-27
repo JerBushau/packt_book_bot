@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost/reminders', function(err) {
+mongoose.connect('mongodb://localhost/teams', function(err) {
   if (err) {
     console.error('Failed connecting to Mongo... :(', err);
   } else {
