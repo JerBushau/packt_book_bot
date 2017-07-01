@@ -1,7 +1,7 @@
 'use strict'
 
 const request = require('request');
-const apiURL = 'https://bdacd210.ngrok.io/api';
+const apiURL = 'https://20eea390.ngrok.io/api';
 
 class Store {
   get() {

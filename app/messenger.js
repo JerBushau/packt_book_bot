@@ -30,7 +30,11 @@ class Messenger {
         if (err) { reject(err) };
         const $ = cheerio.load(body);
         const freeBook = $('.dotd-title h2').text().trim();
-        let mssg = `Today's free book is '${freeBook}'. \n:point_right: ${packt}`;
+        if (!freeBook) {
+          let mssg = `I was unable to retrieve the free book at this time. Something may be wrong with ${packt}`;
+          return resolve(mssg);
+        }
+        let mssg = `Today's free book is '${freeBook}'. \n:point_right: ${packt}.`;
         resolve(mssg);
       });
     });
@@ -48,6 +52,8 @@ class Messenger {
       }
     };
     request.post(options, (err, response) => {
+      // if body === No service it is likely the team uninstalled app so after 3 of these
+      // disable the teams reminder
       if (response.body === 'No service') {
         console.error('no service error');
         this.tracker.incrementData(team, 'postErrors');
@@ -74,7 +80,6 @@ class Messenger {
     });
   }
 
-  // look into adding the ability to add optional args such as an attachments array etc...
   // send response to slash commands
   send(res, { response_type='ephemeral', text }) {
     let options =  {

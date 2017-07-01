@@ -23,12 +23,12 @@ class App {
 
   handleDuplicateTeam(team) {
     let _team = this.model.findTeamById(team.teamID);
-      _team.url = team.url;
-      _team.isScheduled = false;
-      _team.time = null;
-      this.model.db.update(_team);
-      this.messenger.welcome(team);
-      this.model.refresh();
+    _team.url = team.url;
+    _team.isScheduled = false;
+    _team.time = null;
+    this.model.db.update(_team);
+    this.messenger.welcome(team);
+    this.model.refresh();
   }
 
   // when a team installs the app add team to db
