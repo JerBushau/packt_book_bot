@@ -31,29 +31,30 @@ class Messenger {
         const $ = cheerio.load(body);
         const freeBook = $('.dotd-title h2').text().trim();
         if (!freeBook) {
-          let mssg = `I was unable to retrieve the free book at this time. Something may be wrong with ${packt}`;
-          return resolve(mssg);
+          let message = `>:cake: THE CAKE IS A LIE! :cake:` +
+            `\nI was unable to retrieve the free book at this time. Something may be wrong with ${packt}.`;
+          return resolve(message);
         }
-        let mssg = `Today's free book is '${freeBook}'. \n:point_right: ${packt}.`;
-        resolve(mssg);
+        let message = `Today's free book is '${freeBook}'. \n:point_right: ${packt}.`;
+        resolve(message);
       });
     });
   }
 
   // look into adding the ability to add optional args such as an attachments array etc...
   // post to webhook
-  post(team, mssg) {
+  post(team, message) {
     let options = {
       uri: team.url,
       json: {
         response_type: 'in_channel',
         contentType: 'application/json',
-        text: mssg
+        text: message
       }
     };
     request.post(options, (err, response) => {
       // if body === No service it is likely the team uninstalled app so after 3 of these
-      // disable the teams reminder
+      // disable said teams reminder
       if (response.body === 'No service') {
         console.error('no service error');
         this.tracker.incrementData(team, 'postErrors');
@@ -70,8 +71,8 @@ class Messenger {
   // scrape book then post
   postBook(team) {
     this.bookMssg()
-    .then(mssg => {
-      this.post(team, mssg);
+    .then(message => {
+      this.post(team, message);
       // update meta data
       this.tracker.incrementData(team, 'remindersPosts');
     })
@@ -96,8 +97,8 @@ class Messenger {
   book(res, team, type) {
     // what happens if packt website is down
     this.bookMssg()
-    .then(mssg => {
-      this.send(res, { response_type: type, text: mssg });
+    .then(message => {
+      this.send(res, { response_type: type, text: message });
       // update meta data based on type
       if (type === 'in_channel') {
         this.tracker.incrementData(team, 'publicFreebookPosts');
@@ -108,27 +109,27 @@ class Messenger {
   }
 
   welcome(team) {
-    const mssg = 'Thank you for installing Freebookbot!';
+    const message = 'Thank you for installing Freebookbot!';
     let options = {
       uri: team.url,
       json: {
         response_type: 'in_channel',
         contentType: 'application/json',
-        text: mssg
+        text: message
       }
     };
     request.post(options, err => { if (err) { console.log(err)} });
   }
 
   schedule(res, time) {
-    const mssg = `Your teams reminder is scheduled for ${this.formatTime(time)} every day!` +
+    const message = `Your teams reminder is scheduled for ${this.formatTime(time)} every day!` +
       '\nTo cancel type: \`/freebook cancel\`.';
-    this.send(res, { response_type: 'in_channel', text: mssg });
+    this.send(res, { response_type: 'in_channel', text: message });
   }
 
   cancel(res) {
-    const mssg = `Your teams reminder has been canceled.`;
-    this.send(res, { response_type: 'in_channel', text: mssg });
+    const message = `Your teams reminder has been canceled.`;
+    this.send(res, { response_type: 'in_channel', text: message });
   }
 
   error(res, error) {
@@ -145,7 +146,7 @@ class Messenger {
   }
 
   help(res) {
-    const mssg = '*Freebookbot* is a slack application that will help you and your team stay up on' +
+    const message = '*Freebookbot* is a slack application that will help you and your team stay up on' +
       ' the Packt Publishing free learning offer of the day. \n*It provides the following options:*' +
       '\n>`/freebook` will post the free learning offer, only visible to you.' +
       '\n\n>`/freebook public` will post the free learning offer in the current channel.' +
@@ -154,7 +155,7 @@ class Messenger {
       ' `/freebook 8` or for 2pm type `/freebook 14` etc... Only one reminder allowed per team.' +
       '\n\n>`/freebook cancel` will cancel your teams reminder.' +
       '\n\n>`freebook help` displays this message. :v:';
-    this.send(res, { text: mssg });
+    this.send(res, { text: message });
   }
 
 }
