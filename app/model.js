@@ -15,6 +15,26 @@ class Model {
     .then(_ => { console.log(this.teams)});
   }
 
+  isDuplicate(team) {
+    if (typeof team === 'object') {
+      return this.teams.some(item => {
+        return team.teamID === item.teamID
+      });
+    }
+    // assume that team is just teamID if not object
+    return this.teams.some(item => {
+      return team === item.teamID
+    });
+  }
+
+  findTeamById(id) {
+    return this.teams.find(team => {
+      if (team.teamID === id) {
+        return team
+      }
+    });
+  }
+
   addNewTeam(team) {
     return new Promise((resolve, reject) => {
       this.db.addNewTeam(team);

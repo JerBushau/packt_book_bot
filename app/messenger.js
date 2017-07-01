@@ -5,7 +5,12 @@ const cheerio = require('cheerio');
 
 const packt = 'https://www.packtpub.com/packt/offers/free-learning/';
 
-class Mssgr {
+class Messenger {
+  constructor(tracker) {
+    this.tracker = tracker;
+  }
+
+  // put this somewhere else maybe helpers
   formatTime(mTime) {
     mTime = parseInt(mTime);
     if (mTime === 0) {
@@ -18,11 +23,11 @@ class Mssgr {
     return mTime + ' am'
   }
 
-  // scrape book
+  // possibly put this in it's own obj to facilitate expansion of scraping function in future
   bookMssg() {
     return new Promise((resolve, reject) => {
       request(packt, function (err, response, body) {
-        if (err) { return 'Something went wrong...' };
+        if (err) { reject(err) };
         const $ = cheerio.load(body);
         const freeBook = $('.dotd-title h2').text().trim();
         let mssg = `Today's free book is '${freeBook}'. \n:point_right: ${packt}`;
@@ -42,10 +47,17 @@ class Mssgr {
         text: mssg
       }
     };
-    request.post(options, function(err, response) {
-      if (err || response.statusCode !== 200) {
-        console.log(err)
+    request.post(options, (err, response) => {
+      if (response.body === 'No service') {
+        console.error('no service error');
+        this.tracker.incrementData(team, 'postErrors');
+        if (team.postData.postErrors > 2) {
+          console.log(`disabling reminder for ${team.teamID}`);
+          this.tracker.disableInactiveTeam(team);
+        }
+        return
       }
+      console.log(`i posted at ${team.time} for ${team.teamID}.`);
     });
   }
 
@@ -53,7 +65,12 @@ class Mssgr {
   postBook(team) {
     this.bookMssg()
     .then(mssg => {
-      this.post(team, mssg)
+      this.post(team, mssg);
+      // update meta data
+      this.tracker.incrementData(team, 'remindersPosts');
+    })
+    .catch(err => {
+      console.error('scraping book failed', err);
     });
   }
 
@@ -71,11 +88,18 @@ class Mssgr {
 
   // slash replies
   // maybe turn these functions into an array of mssgs that can all be sent using Mssgr.send()
-  book(res, type) {
+  book(res, team, type) {
+    // what happens if packt website is down
     this.bookMssg()
     .then(mssg => {
       this.send(res, { response_type: type, text: mssg });
+      // update meta data based on type
+      if (type === 'in_channel') {
+        this.tracker.incrementData(team, 'publicFreebookPosts');
+      }
+      this.tracker.incrementData(team, 'privateFreebookPosts');
     });
+    // catch possible errors here
   }
 
   welcome(team) {
@@ -130,4 +154,4 @@ class Mssgr {
 
 }
 
-module.exports = Mssgr;
+module.exports = Messenger;

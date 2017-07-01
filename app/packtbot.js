@@ -2,10 +2,11 @@
 
 const Store = require('./store');
 const Model = require('./model');
-const Mssgr = require('./mssgr');
+const Messenger = require('./messenger');
+const Tracker = require('./tracker');
 const App = require('./app');
 
-const app = new App(Mssgr, Model, Store);
+const app = new App(Messenger, Tracker, Model, Store);
 
 // start app
 app.init();

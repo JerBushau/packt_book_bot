@@ -56,6 +56,7 @@ router.get('/oauth', function(req, res){
 router.post('/freebook', function (req, res, next) {
   let text = req.body.text.toLowerCase();
   let teamID = req.body.team_id;
+  let team = packtbot.model.findTeamById(teamID);
 
   // create a reminder
   if (text && /^((?:[0-9]|1[0-9]|2[0-3]))$/.test(text)) {
@@ -67,19 +68,19 @@ router.post('/freebook', function (req, res, next) {
 
   // help
   } else if (text && text === 'help') {
-    packtbot.mssgr.help(res);
+    packtbot.messenger.help(res);
 
   // private response, in case you don't want to disturb your team.
   } else if (text && text === 'public') {
-    packtbot.mssgr.book(res, 'in_channel');
+    packtbot.messenger.book(res, team, 'in_channel');
 
   // default
   } else if (!text){
-    packtbot.mssgr.book(res);
+    packtbot.messenger.book(res, team);
 
   // invalid command
   } else {
-    packtbot.mssgr.error(res, 'invalid');
+    packtbot.messenger.error(res, 'invalid');
   }
 });
 

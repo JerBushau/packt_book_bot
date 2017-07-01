@@ -3,9 +3,9 @@
 const nodeSchedule = require('node-schedule');
 
 class App {
-  constructor(mssgr, model, db) {
-    this.mssgr = new mssgr;
+  constructor(messenger, tracker, model, db) {
     this.model = new model(new db);
+    this.messenger = new messenger(new tracker(this.model));
   }
 
   // function that will loop through and post free book to teams every hour
@@ -15,63 +15,52 @@ class App {
       let currTime = new Date().getHours();
       this.model.teams.find(team => {
         if (team.isScheduled && team.time === currTime) {
-          console.log(`i posted at ${team.time} for ${team.teamID}.`);
-          this.mssgr.postBook(team);
+          this.messenger.postBook(team);
         }
       });
     });
   }
 
+  handleDuplicateTeam(team) {
+    let _team = this.model.findTeamById(team.teamID);
+      _team.url = team.url;
+      _team.isScheduled = false;
+      _team.time = null;
+      this.model.db.update(_team);
+      this.messenger.welcome(team);
+      this.model.refresh();
+  }
+
   // when a team installs the app add team to db
   addNewTeam(team) {
-    if (this.isDuplicate(team)) {
-      // possibly delete old entry or update if reinstall takes place...
-      return console.error('Team already exists.')
+    if (this.model.isDuplicate(team)) {
+      return this.handleDuplicateTeam()
     }
     this.model.addNewTeam(team)
     .then(_ => {
       // update model
       this.model.refresh();
-      this.mssgr.welcome(team);
+      this.messenger.welcome(team);
     });
   }
 
-  // dry these up
+  // further dry these up
   scheduleReminder(res, teamID, time) {
-    this.model.teams.find(team => {
-      if (team.teamID === teamID) {
-        if (team.isScheduled) {
-          return this.mssgr.error(res, 'limit')
-        }
-        this.model.scheduleReminder(team, time);
-        this.mssgr.schedule(res, time);
-      }
-    });
+    let team = this.model.findTeamById(teamID);
+    if (team.isScheduled) {
+      return this.messenger.error(res, 'limit')
+    }
+    this.model.scheduleReminder(team, time);
+    this.messenger.schedule(res, time);
   }
 
   cancelReminder(res, teamID) {
-    this.model.teams.find(team => {
-      if (team.teamID === teamID) {
-        if (!team.isScheduled) {
-          return this.mssgr.error(res, 'notScheduled');
-        }
-        this.model.cancelReminder(team);
-        this.mssgr.cancel(res);
-      }
-    });
-  }
-
-  // maybe put this in model? maybe create a team obj?
-  isDuplicate(team) {
-    if (typeof team === 'object') {
-      return this.model.teams.some(item => {
-        return team.teamID === item.teamID
-      });
+    let team = this.model.findTeamById(teamID)
+    if (!team.isScheduled) {
+      return this.messenger.error(res, 'notScheduled');
     }
-    // assume that team is just teamID if not object
-    return this.model.teams.some(item => {
-      return team === item.teamID
-    });
+    this.model.cancelReminder(team);
+    this.messenger.cancel(res);
   }
 
 }
