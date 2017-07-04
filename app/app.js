@@ -3,9 +3,10 @@
 const nodeSchedule = require('node-schedule');
 
 class App {
-  constructor(messenger, tracker, model, db) {
+  constructor(messenger, tracker, crypt, model, db) {
     this.model = new model(new db);
-    this.messenger = new messenger(new tracker(this.model));
+    this.crypt = new crypt();
+    this.messenger = new messenger(new tracker(this.model), this.crypt);
   }
 
   // function that will loop through and post free book to teams every hour
@@ -34,7 +35,7 @@ class App {
   // when a team installs the app add team to db
   addNewTeam(team) {
     if (this.model.isDuplicate(team)) {
-      return this.handleDuplicateTeam()
+      return this.handleDuplicateTeam(team);
     }
     this.model.addNewTeam(team)
     .then(_ => {

@@ -7,8 +7,9 @@ const helpers = require('./helpers');
 const packt = 'https://www.packtpub.com/packt/offers/free-learning/';
 
 class Messenger {
-  constructor(tracker) {
+  constructor(tracker, crypt) {
     this.tracker = tracker;
+    this.crypt = crypt;
   }
 
   // possibly put this in it's own obj to facilitate expansion of scraping function in future
@@ -18,12 +19,13 @@ class Messenger {
         if (err) { reject(err) };
         const $ = cheerio.load(body);
         const freeBook = $('.dotd-title h2').text().trim();
+        const bookDescription = $('.dotd-title').next().next().text().trim();
         if (!freeBook) {
-          let message = `>:cake: THE CAKE IS A LIE! :cake:` +
+          let message = `>:cake: *THE CAKE IS A LIE!* :cake:` +
             `\nI was unable to retrieve the free book at this time. Something may be wrong with the <${packt}|Packt site>.`;
           return resolve(message);
         }
-        let message = `Today's free book is '${freeBook}'. \n:point_right: <${packt}|Click here to get it now!>`;
+        let message = `*Today's free book is '<${packt}|${freeBook}>'*. \n>${bookDescription}`;
         resolve(message);
       });
     });
@@ -33,7 +35,8 @@ class Messenger {
   // post to webhook
   post(team, message) {
     let options = {
-      uri: team.url,
+      // decrypt here
+      uri: this.crypt.decrypt(team.url),
       json: {
         response_type: 'in_channel',
         contentType: 'application/json',
@@ -94,7 +97,8 @@ class Messenger {
   welcome(team) {
     const message = 'Thank you for installing Freebookbot!';
     let options = {
-      uri: team.url,
+      // decrypt here
+      uri: this.crypt.decrypt(team.url),
       json: {
         response_type: 'in_channel',
         contentType: 'application/json',

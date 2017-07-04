@@ -28,7 +28,8 @@ router.get('/oauth', function(req, res){
       const _body = JSON.parse(body);
       const token = _body.access_token;
       const newTeam = {
-        url: _body.incoming_webhook.url,
+        // encrypt pw here
+        url: packtbot.crypt.encrypt(_body.incoming_webhook.url),
         teamID:_body.team_id
       };
 
