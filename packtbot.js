@@ -20,20 +20,20 @@ function scrapeAndPostBook(res, resType) {
     }
 
     const $ = cheerio.load(body);
+    const bookDescription = $('.dotd-title').next().next().text().trim();
     const freeBook = $('.dotd-title h2').text().trim();
     if (!freeBook) {
       const botPayload = {
       response_type: resType,
-      text: `>:cake: THE CAKE IS A LIE! :cake:\nI am unable to retrieve the free book at this time, something may be wrong with ${packt}.`
+      text: `>:cake: *THE CAKE IS A LIE!* :cake:\nI am unable to retrieve the free book at this time, something may be wrong with ${packt}.`
     };
 
     return res.status(200).json(botPayload);
     }
     const botPayload = {
       response_type: resType,
-      text: `Today's free book is '${freeBook}'. \n:point_right: ${packt}`
+      text: `*Today's free book is '<${packt}|${freeBook}>'*. \n>${bookDescription}`
     };
-
     return res.status(200).json(botPayload);
   });
 }
