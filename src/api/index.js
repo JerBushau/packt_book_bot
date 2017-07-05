@@ -15,15 +15,15 @@ router.get('/teams', function(req, res) {
 });
 
 // DELETE team by teamID(which should be unique)
-router.delete('/team/:teamID', function(req, res) {
-  const teamId = req.params.teamID;
-  Team.findOneAndRemove(teamId, function(err, result) {
-    if (err) {
-      return res.status(500).json({ message: err.message });
-    }
-    res.json({ message: 'team deleted' });
-  });
-});
+// router.delete('/team/:teamID', function(req, res) {
+//   const teamId = req.params.teamID;
+//   Team.findOneAndRemove(teamId, function(err, result) {
+//     if (err) {
+//       return res.status(500).json({ message: err.message });
+//     }
+//     res.json({ message: 'team deleted' });
+//   });
+// });
 
 // DELETE by _id
 router.delete('/teams/:id', function(req, res) {

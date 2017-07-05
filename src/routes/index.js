@@ -7,8 +7,15 @@ const request = require('request');
 
 const packtbot = require('../../app/packtbot');
 
+// uninstall event route
+router.post('/events', function(req, res, next) {
+  const payload = req.body;
+  console.log('req.body:', payload);
+  res.send(payload.challenge);
+});
+
 // oauth route
-router.get('/oauth', function(req, res){
+router.get('/oauth', function(req, res) {
   if (!req.query.code) {
     // access denied
     return res.redirect('https://packtpubbot.herokuapp.com/');

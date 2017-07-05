@@ -54,6 +54,12 @@ class Model {
     this.db.update(team);
   }
 
+  deleteTeam(team) {
+    let index = this.teams.indexOf(team);
+    this.teams.splice(index, 1);
+    this.db.deleteTeam(team._id);
+  }
+
 }
 
 module.exports = Model;
