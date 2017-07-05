@@ -1,7 +1,7 @@
 'use strict'
 
 const request = require('request');
-const apiURL = 'https://36b61a8b.ngrok.io/api';
+const apiURL = 'https://e97f7f47.ngrok.io/api';
 
 class Store {
   get() {
@@ -23,7 +23,7 @@ class Store {
     request.put(`${apiURL}/team/${team._id}`, { form: team });
   }
 
-  remove(id) {
+  deleteTeam(id) {
     request.delete(`${apiURL}/teams/${id}`);
   }
 

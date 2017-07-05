@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // serve static files
 app.use('/', express.static(path.join(__dirname, '..', '/public')));
 
-// oauth and bot
+// oauth, events and bot routes
 app.use('/', router);
 
 // api route

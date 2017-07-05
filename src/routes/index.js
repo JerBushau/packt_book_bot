@@ -2,16 +2,25 @@
 
 const express = require('express');
 const router = express.Router();
+const bodyParser = require('body-parser');
+const JSONParser = bodyParser.json();
 
 const request = require('request');
 
 const packtbot = require('../../app/packtbot');
 
 // uninstall event route
-router.post('/events', function(req, res, next) {
-  const payload = req.body;
-  console.log('req.body:', payload);
-  res.send(payload.challenge);
+router.post('/events', JSONParser, function(req, res, next) {
+  let _body = req.body;
+  let teamID = _body.team_id;
+  let token = _body.token;
+  let eventType = _body.event.type;
+  if (token === process.env.SLACK_VERIFICATION_TOKEN && eventType === 'app_uninstalled') {
+    res.send(_body.challenge);
+    let team = packtbot.model.findTeamById(teamID);
+    console.log('OHNOES, someone uninstalled the app!', team);
+    packtbot.model.deleteTeam(team);
+  }
 });
 
 // oauth route
